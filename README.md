@@ -1,6 +1,6 @@
 # Introduction
 
-CHIRP driver for UV-K5/K6/5R radios running [NUNU firmware by kamilsss655](https://github.com/kamilsss655/uv-k5-firmware-custom) fork of [Egzumer firmware](https://github.com/egzumer/uv-k5-firmware-custom)
+CHIRP driver for UV-K5/K6/5R radios running [NUNU firmware by kamilsss655](https://github.com/kamilsss655/uv-k5-firmware-custom), a fork of [Egzumer firmware](https://github.com/egzumer/uv-k5-firmware-custom)
 
 This is a modification of the [Egzumer uvk5 driver](https://github.com/egzumer/uvk5-chirp-driver) which itself is a modification of a driver created by:<br>
 (c) 2023 Jacek Lipkowski <sq5bpf@lipkowski.org>
