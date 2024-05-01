@@ -1111,7 +1111,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             }
         }
         try:
-            mem.mode = temp_modes[mode_map[_mem.modulation][_mem.bandwidth]]
+            mem.mode = temp_modes[mode_map[int(_mem.modulation)][int(_mem.bandwidth)]]
         except KeyError:
             mem.mode = "UNSUPPORTED BY CHIRP"
 
