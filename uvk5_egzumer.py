@@ -70,7 +70,8 @@ struct {
   offsetDir:4;
 
 // 0x0C
-  u8 __UNUSED1:3,
+  __UNUSED1:1,
+  u8 bandwidth_ext:2
   busyChLockout:1,
   txpower:2,
   bandwidth:1,
@@ -1109,7 +1110,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             }
         }
         try:
-            mem.mode = temp_modes[mode_map[int(_mem.modulation)][int(_mem.bandwidth)]]
+            mem.mode = temp_modes[mode_map[int(_mem.modulation)][int(_mem.bandwidth) + int(_mem.bandwidth_ext)]]
         except KeyError:
             mem.mode = "UNSUPPORTED BY CHIRP"
 
@@ -2399,6 +2400,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
         # mode ["FM", "NFM", "AM", "NAM", "AIR", "USB"]
         # 0 = FM, 1 = AM, 2 = USB
+        _mem.bandwidth_ext = 0
         if memory.mode == "FM":
             _mem.modulation = 0
             _mem.bandwidth = 0
@@ -2413,7 +2415,8 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             _mem.bandwidth = 1
         elif memory.mode == "AIR":
             _mem.modulation = 1
-            _mem.bandwidth = 2
+            _mem.bandwidth = 1
+            _mem.bandwidth_ext = 1
         elif memory.mode == "USB":
             _mem.modulation = 2
             _mem.bandwidth = 1
