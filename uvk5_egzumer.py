@@ -2430,7 +2430,6 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         _mem.freq_reverse = get_setting("frev", False)
         _mem.dtmf_decode = get_setting("dtmfdecode", False)
         _mem.scrambler = get_setting("scrambler", 0)
-        _mem4.ch_attr[number].compander = get_setting("compander", 0)
         if number < 200:
             tmp_val = get_setting("scanlist", 0)
             _mem4.ch_attr[number].scanlist = tmp_val
