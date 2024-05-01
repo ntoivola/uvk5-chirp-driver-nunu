@@ -847,7 +847,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
 
         rf.valid_characters = chirp_common.CHARSET_ASCII
-        rf.valid_modes = ["FM", "NFM", "AM", "NAM", "USB"]
+        rf.valid_modes = ["FM", "NFM", "AM", "NAM", "AIR", "USB"]
 
         rf.valid_skips = [""]
 
@@ -1094,12 +1094,23 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
         # mode
         temp_modes = self.get_features().valid_modes
-        temp_modul = _mem.modulation*2 + _mem.bandwidth
-        if temp_modul < len(temp_modes):
-            mem.mode = temp_modes[temp_modul]
-        elif temp_modul == 5: # USB with narrow setting
-            mem.mode = temp_modes[4]
-        elif temp_modul >= len(temp_modes):
+        mode_map = {
+            0: {
+                0: 0,
+                1: 1
+            },
+            1: {
+                0: 2,
+                1: 3,
+                2: 4
+            },
+            2: {
+                1: 5
+            }
+        }
+        try:
+            mem.mode = temp_modes[mode_map[_mem.modulation][_mem.bandwidth]]
+        except KeyError:
             mem.mode = "UNSUPPORTED BY CHIRP"
 
         # tuning step
@@ -2386,12 +2397,22 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         # find band
         band = self._find_band(memory.freq)
 
-        # mode
-        tmp_mode = self.get_features().valid_modes.index(memory.mode)
-        _mem.modulation = tmp_mode / 2
-        _mem.bandwidth = tmp_mode % 2
-        if memory.mode == "USB":
-            _mem.bandwidth = 1 # narrow
+        # mode ["FM", "NFM", "AM", "NAM", "AIR", "USB"]
+        # 0 = FM, 1 = AM, 2 = USB
+        if memory.mode in ('FM', 'NFM'):
+            _mem.modulation = 0
+        elif memory.mode in ('AM', 'NAM', 'AIR'):
+            _mem.modulation = 1
+        else:
+            _mem.modulation = 2
+
+        # 0 = wide, 1 = narrow, 2 = narrowaviation, 3 = narrower, 4 = narrowest
+        if memory.mode in ('FM', 'AM'):
+            _mem.bandwidth = 0  # wide
+        elif memory.mode in ('NFM', 'NAM', 'USB'):
+            _mem.bandwidth = 1  # narrow
+        else:
+            _mem.bandwidth = 2  # narrowaviation
 
         # frequency/offset
         _mem.freq = memory.freq/10
