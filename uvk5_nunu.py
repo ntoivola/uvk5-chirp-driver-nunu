@@ -70,8 +70,8 @@ struct {
   offsetDir:4;
 
 // 0x0C
-  __UNUSED1:1,
-  u8 bandwidth_ext:2
+  u8 __UNUSED1:1,
+  bandwidth_ext:2
   busyChLockout:1,
   txpower:2,
   bandwidth:1,
