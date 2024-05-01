@@ -89,9 +89,7 @@ struct {
 
 //#seekto 0xd60;
 struct {
-u8 is_scanlist1:1,
-is_scanlist2:1,
-compander:2,
+u8 scanlist:4,
 is_free:1,
 band:3;
 } ch_attr[200];
@@ -353,8 +351,6 @@ UVK5_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=1.50),
 # scrambler
 SCRAMBLER_LIST = ["OFF", "2600Hz", "2700Hz", "2800Hz", "2900Hz", "3000Hz",
                    "3100Hz", "3200Hz", "3300Hz", "3400Hz", "3500Hz"]
-# compander
-COMPANDER_LIST = ["OFF", "TX", "RX", "TX/RX"]
 # rx mode
 RXMODE_LIST = ["MAIN ONLY", "DUAL RX RESPOND", "CROSS BAND", "MAIN TX DUAL RX"]
 # channel display mode
@@ -471,8 +467,8 @@ BANDS_WIDE = {
         6: [470.0, 1300.0]
         }
 
-SCANLIST_LIST = ["None", "List1", "List2", "Both"]
-SCANLIST_SELECT_LIST = ["LIST1", "LIST2", "ALL"]
+SCANLIST_LIST = ["None", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+SCANLIST_SELECT_LIST = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
 
 DTMF_CHARS = "0123456789ABCD*# "
 DTMF_CHARS_ID = "0123456789ABCDabcd"
@@ -1013,9 +1009,8 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             if _mem3.is_free:
                 is_empty = True
             # scanlists
-            temp_val = _mem3.is_scanlist1 + _mem3.is_scanlist2 * 2
+            temp_val = _mem3.scanlist
             tmpscn = SCANLIST_LIST[temp_val]
-            tmp_comp = list_def(_mem3.compander, COMPANDER_LIST, 0)
 
         if is_empty:
             mem.empty = True
@@ -1044,12 +1039,8 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("scrambler", "Scrambler", val)
             mem.extra.append(rs)
 
-            val = RadioSettingValueList(COMPANDER_LIST)
-            rs = RadioSetting("compander", "Compander", val)
-            mem.extra.append(rs)
-
             val = RadioSettingValueList(SCANLIST_LIST)
-            rs = RadioSetting("scanlists", "Scanlists", val)
+            rs = RadioSetting("scanlist", "Scanlist", val)
             mem.extra.append(rs)
 
             # actually the step and duplex are overwritten by chirp based on
@@ -1061,7 +1052,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
         if ch_num > 199:
             mem.name = self._get_vfo_channel_names()[ch_num-200]
-            mem.immutable = ["name", "scanlists"]
+            mem.immutable = ["name", "scanlist"]
         else:
             _mem2 = self._memobj.channelname[ch_num]
             for char in _mem2.name:
@@ -1153,13 +1144,8 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("scrambler", "Scrambler (Scramb)", val)
         mem.extra.append(rs)
 
-        # Compander
-        val = RadioSettingValueList(COMPANDER_LIST, None, tmp_comp)
-        rs = RadioSetting("compander", "Compander (Compnd)", val)
-        mem.extra.append(rs)
-
         val = RadioSettingValueList(SCANLIST_LIST, tmpscn)
-        rs = RadioSetting("scanlists", "Scanlists (SList)", val)
+        rs = RadioSetting("scanlist", "Scanlist (SList)", val)
         mem.extra.append(rs)
 
         return mem
@@ -1468,7 +1454,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                     k = str(element.value).rstrip("\x20\xff\x00") + "\xff"*3
                     _mem.dtmfcontact[i-1].number = k[0:3]
 
-            # scanlist stuff
+            # scanlist stuff FIXME: remove this
             if elname == "slDef":
                 _mem.slDef = SCANLIST_SELECT_LIST.index(
                         str(element.value))
@@ -1777,7 +1763,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting(varnumname, varinumdescr, val)
             dtmfc.append(rs)
 
-################## Scan Lists
+################## Scan Lists FIXME: remove these
 
         tmpscanl = list_def(_mem.slDef, SCANLIST_SELECT_LIST, 0)
         val = RadioSettingValueList(SCANLIST_SELECT_LIST, None, tmpscanl)
@@ -2369,17 +2355,13 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             if number < 200:
                 _mem2 = self._memobj.channelname[number]
                 _mem2.set_raw("\xFF" * 16)
-                _mem4.ch_attr[number].is_scanlist1 = 0
-                _mem4.ch_attr[number].is_scanlist2 = 0
-                _mem4.ch_attr[number].compander = 0
+                _mem4.ch_attr[number].scanlist = 0
                 _mem4.ch_attr[number].is_free = 1
                 _mem4.ch_attr[number].band = 0x7
             return memory
 
         if number < 200:
-            _mem4.ch_attr[number].is_scanlist1 = 0
-            _mem4.ch_attr[number].is_scanlist2 = 0
-            _mem4.ch_attr[number].compander = 0
+            _mem4.ch_attr[number].scanlist = 0
             _mem4.ch_attr[number].is_free = 1
             _mem4.ch_attr[number].band = 0x7
 
@@ -2450,8 +2432,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         _mem.scrambler = get_setting("scrambler", 0)
         _mem4.ch_attr[number].compander = get_setting("compander", 0)
         if number < 200:
-            tmp_val = get_setting("scanlists", 0)
-            _mem4.ch_attr[number].is_scanlist1 = bool(tmp_val & 1)
-            _mem4.ch_attr[number].is_scanlist2 = bool(tmp_val & 2)
+            tmp_val = get_setting("scanlist", 0)
+            _mem4.ch_attr[number].scanlist = tmp_val
 
         return memory
