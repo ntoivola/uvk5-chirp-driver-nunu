@@ -71,7 +71,7 @@ struct {
 
 // 0x0C
   u8 __UNUSED1:1,
-  bandwidth_ext:2
+  bandwidth_ext:2,
   busyChLockout:1,
   txpower:2,
   bandwidth:1,
