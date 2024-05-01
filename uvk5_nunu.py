@@ -2401,20 +2401,24 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
         # mode ["FM", "NFM", "AM", "NAM", "AIR", "USB"]
         # 0 = FM, 1 = AM, 2 = USB
-        if memory.mode in ('FM', 'NFM'):
+        if memory.mode == "FM":
             _mem.modulation = 0
-        elif memory.mode in ('AM', 'NAM', 'AIR'):
+            _mem.bandwidth = 0
+        elif memory.mode == "NFM":
+            _mem.modulation = 0
+            _mem.bandwidth = 1
+        elif memory.mode == "AM":
             _mem.modulation = 1
-        else:
+            _mem.bandwidth = 0
+        elif memory.mode == "NAM":
+            _mem.modulation = 1
+            _mem.bandwidth = 1
+        elif memory.mode == "AIR":
+            _mem.modulation = 1
+            _mem.bandwidth = 2
+        elif memory.mode == "USB":
             _mem.modulation = 2
-
-        # 0 = wide, 1 = narrow, 2 = narrowaviation, 3 = narrower, 4 = narrowest
-        if memory.mode in ('FM', 'AM'):
-            _mem.bandwidth = 0  # wide
-        elif memory.mode in ('NFM', 'NAM', 'USB'):
-            _mem.bandwidth = 1  # narrow
-        else:
-            _mem.bandwidth = 2  # narrowaviation
+            _mem.bandwidth = 1
 
         # frequency/offset
         _mem.freq = memory.freq/10
