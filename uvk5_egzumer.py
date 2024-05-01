@@ -1109,10 +1109,15 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                 1: 5
             }
         }
+
+        temp_bandwidth = int(_mem.bandwidth)
+        if temp_bandwidth == 1:
+            temp_bandwidth = int(_mem.bandwidth_ext) + 1
+
         try:
-            mem.mode = temp_modes[mode_map[int(_mem.modulation)][int(_mem.bandwidth) + int(_mem.bandwidth_ext)]]
+            mem.mode = temp_modes[mode_map[int(_mem.modulation)][temp_bandwidth]]
         except KeyError:
-            mem.mode = "UNSUPPORTED BY CHIRP"
+            mem.mode = temp_modes[0]
 
         # tuning step
         tstep = _mem.step
