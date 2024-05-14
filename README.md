@@ -1,6 +1,6 @@
 # Introduction
 
-CHIRP driver for UV-K5/K6/5R radios running [ntoivola's fork](https://github.com/ntoivola/uv-k5-firmware-custom-nunu/tree/develop) of 
+CHIRP driver for UV-K5/K6/5R radios running [ntoivola's fork](https://github.com/ntoivola/uv-k5-firmware-custom-nunu/tree/main) of 
 [kamilsss655's NUNU firmware](https://github.com/kamilsss655/uv-k5-firmware-custom), a fork of [Egzumer firmware](https://github.com/egzumer/uv-k5-firmware-custom).
 
 This is a modification of [kamilsss655's fork](https://github.com/kamilsss655/uvk5-chirp-driver) of the [Egzumer uvk5 driver](https://github.com/egzumer/uvk5-chirp-driver) which itself is a modification of a driver created by:<br>
@@ -8,11 +8,13 @@ This is a modification of [kamilsss655's fork](https://github.com/kamilsss655/uv
 
 Licensed cc-by-sa-4.0
 
+**This software is provided as-is, I offer no support and no guarantees of any kind. I made this for myself but hope someone finds it useful. Questions, feedback and PRs are welcome but no promises.**
+
 My fork contains the following modifications over [kamilsss655's fork](https://github.com/kamilsss655/uvk5-chirp-driver):
 
-* **Support for 15 scanlists** and consequently no support for compander settings.
+* **Support for 15 scanlists** and consequently no support for compander settings. This requires [my fork](https://github.com/ntoivola/uv-k5-firmware-custom-nunu/tree/main) of the UV-K5 firmware.
 * **Fix for the missing PMR446 frequency lock mode and some missing programmable key actions**.
-* **Support for `AIR` mode (AM with 8.33k bandwidth)**. Note: this also requires patching CHIRP itself to allow the `AIR` channel mode, otherwise channels will revert back to normal AM.
+* **Support for `AIR` mode (AM with 8.33k bandwidth)**. Note: this also requires patching CHIRP itself to allow the `AIR` channel mode, otherwise channels will revert back to normal AM. [My fork of CHIRP](https://github.com/ntoivola/chirp/) includes that modification.
 * **Name and identity change from `UV-K5 (egzumer)` to `UV-K5 (NUNU)`** to avoid mixups.
 
 # How to use
